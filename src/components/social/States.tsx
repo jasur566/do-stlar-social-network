@@ -11,8 +11,8 @@ export function EmptyState({
 }: {
   icon: ReactNode;
   title: string;
-  text?: string;
-  action?: ReactNode;
+  text?: string | undefined;
+  action?: ReactNode | undefined;
 }) {
   return (
     <div className="flex flex-col items-center rounded-3xl border border-dashed bg-card px-6 py-12 text-center">

@@ -41,10 +41,16 @@ export function Composer() {
     if (inputRef.current) inputRef.current.value = "";
   }
 
-  function pick(f: File | undefined) {
+  function pick(f: File | undefined): void {
     if (!f) return;
-    if (!f.type.startsWith("image/")) return toast.error("Faqat rasm fayllari");
-    if (f.size > 5 * 1024 * 1024) return toast.error("Rasm hajmi 5 MB dan oshmasin");
+    if (!f.type.startsWith("image/")) {
+      toast.error("Faqat rasm fayllari");
+      return;
+    }
+    if (f.size > 5 * 1024 * 1024) {
+      toast.error("Rasm hajmi 5 MB dan oshmasin");
+      return;
+    }
     clearFile();
     setFile(f);
     setPreview(URL.createObjectURL(f));
