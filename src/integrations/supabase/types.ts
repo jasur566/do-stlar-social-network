@@ -281,6 +281,39 @@ export type Database = {
           },
         ]
       }
+      profile_managers: {
+        Row: {
+          created_at: string
+          profile_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          profile_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          profile_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_managers_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_managers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -316,6 +349,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_manage_profile: {
+        Args: { _profile: string; _user: string }
+        Returns: boolean
+      }
       get_or_create_conversation: { Args: { other: string }; Returns: string }
       is_participant: {
         Args: { _conv: string; _user: string }

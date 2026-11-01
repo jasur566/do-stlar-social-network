@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { uz } from "date-fns/locale";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { POST_SELECT, useMe, type Post, type Profile } from "@/lib/social";
+import { POST_SELECT, useManagedIds, useMe, type Post, type Profile } from "@/lib/social";
 import { UserAvatar } from "@/components/social/UserAvatar";
 import { FollowButton } from "@/components/social/FollowButton";
 import { PostCard } from "@/components/social/PostCard";
@@ -27,6 +27,7 @@ function ProfilePage() {
   const { data: me } = useMe();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
+  const { data: managed } = useManagedIds();
 
   const profile = useQuery({
     queryKey: ["profile", username],
@@ -67,6 +68,7 @@ function ProfilePage() {
   if (profile.isError) return <ErrorState onRetry={() => profile.refetch()} />;
   if (!p) return <EmptyState icon={<UserX />} title="Foydalanuvchi topilmadi" text={`@${username} mavjud emas.`} />;
   const isMe = me?.id === p.id;
+  const canManage = isMe || !!managed?.has(p.id);
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -76,7 +78,7 @@ function ProfilePage() {
           <div className="-mt-12 flex items-end justify-between gap-3">
             <UserAvatar profile={p} className="h-24 w-24 text-2xl ring-4" />
             <div className="flex gap-2">
-              {isMe ? (
+              {canManage ? (
                 <Button variant="outline" onClick={() => setEditing(true)}>
                   <Pencil /> Tahrirlash
                 </Button>
@@ -112,7 +114,7 @@ function ProfilePage() {
         {posts.data?.length === 0 && <EmptyState icon={<Newspaper />} title="Hali post yo‘q" text={isMe ? "Lentada birinchi postingizni joylang." : undefined} />}
         {posts.data?.map((post) => <PostCard key={post.id} post={post} />)}
       </div>
-      {isMe && <EditProfile open={editing} onOpenChange={setEditing} profile={p} />}
+      {canManage && <EditProfile open={editing} onOpenChange={setEditing} profile={p} />}
     </div>
   );
 }

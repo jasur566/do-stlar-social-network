@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Delegated profile management (e.g. the official @dostlar account) goes through public.profile_managers + can_manage_profile() in RLS; links are added only by migration/admin after verifying the user's confirmed email — users cannot insert them.
