@@ -93,3 +93,18 @@ export function initials(name: string) {
     .join("")
     .toUpperCase();
 }
+
+/** Profile ids the signed-in user may manage (own + official profiles they're linked to). */
+export function useManagedIds() {
+  const { data: me } = useMe();
+  return useQuery({
+    queryKey: ["managed", me?.id],
+    enabled: !!me,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profile_managers").select("profile_id").eq("user_id", me!.id);
+      if (error) throw error;
+      return new Set([me!.id, ...data.map((r) => r.profile_id)]);
+    },
+    staleTime: 60_000,
+  });
+}

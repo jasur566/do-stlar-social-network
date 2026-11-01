@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Heart, MessageCircle, MoreHorizontal, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { timeAgo, useImageUrl, useMe, type Post } from "@/lib/social";
+import { timeAgo, useImageUrl, useManagedIds, useMe, type Post } from "@/lib/social";
 import { UserAvatar } from "./UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -126,6 +126,7 @@ export function PostCard({ post }: { post: Post }) {
   const { data: me } = useMe();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
+  const { data: managed } = useManagedIds();
   const liked = !!me && post.likes.some((l) => l.user_id === me.id);
   const [optimistic, setOptimistic] = useState<boolean | null>(null);
   const isLiked = optimistic ?? liked;
@@ -176,7 +177,7 @@ export function PostCard({ post }: { post: Post }) {
             @{post.author.username} · {timeAgo(post.created_at)}
           </p>
         </div>
-        {post.author_id === me?.id && (
+        {(post.author_id === me?.id || managed?.has(post.author_id)) && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Post amallari">
